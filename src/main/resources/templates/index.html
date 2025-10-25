@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head>
     <title>StudyLab - Free Bootstrap 4 Template by Colorlib</title>
     <meta charset="utf-8">
@@ -42,7 +42,7 @@
 </div>
 </div>
 
-<section class="ftco-section ftco-no-pb ftco-no-pt">
+<section class="ftco-section ftco-no-pb ftco-no-pt" sec:authorize="!isAuthenticated()">
    <div class="container">
       <div class="row">
          <div class="col-md-7"></div>
