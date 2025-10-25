@@ -13,12 +13,18 @@ public class ProjectSecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
                 .securityMatcher("/**")
-                .authorizeHttpRequests((authorize) -> authorize
-                        .requestMatchers("/api/users/register", "/css/**", "/js/**", "/images/**").permitAll()
-                        .anyRequest().authenticated()
+                .authorizeHttpRequests(authorize -> authorize
+                                .requestMatchers(
+                                        "/", "/index", "/about", "/course", "/instructor", "/instructor-details",
+                                        "/blog", "/blog-single", "/contact", "/login", "/api/users/register",
+                                        "/css/**", "/js/**", "/images/**"
+                                ).permitAll()
+                                .anyRequest().authenticated()
                 )
                 .csrf(csrf -> csrf.disable())
-                .formLogin(Customizer.withDefaults()); // Optional: Enable default login form
+                .formLogin(form -> form
+                .loginPage("/login").permitAll())
+                .logout(Customizer.withDefaults());
 
         return http.build();
     }

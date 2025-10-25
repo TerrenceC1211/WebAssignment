@@ -3,9 +3,11 @@ package com.CwY.WebAssignment.service;
 import com.CwY.WebAssignment.model.Role;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 import com.CwY.WebAssignment.dto.RegisterRequest;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 import java.util.Optional;
@@ -17,7 +19,6 @@ public class UserService {
     private UserRepository userRepository;
 
     public User createUser(User user){
-        // Additional logic like hashing password can be added here
         return userRepository.save(user);
     }
 
