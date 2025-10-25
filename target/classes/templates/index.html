@@ -636,19 +636,36 @@
             },
             body: JSON.stringify(formData),
         })
-            .then(response => {
+            .then(async response => {
                 if (response.ok) {
+                    document.getElementById("successMessage").textContent = "Registration successful!";
                     document.getElementById("successMessage").style.display = "block";
                     document.getElementById("errorMessage").style.display = "none";
                     form.reset(); // Clear the form
                 } else {
-                    throw new Error("Failed");
+                    let message = "Registration failed!";
+                    try {
+                        const errorData = await response.json();
+                        if (errorData && errorData.message) {
+                            message = errorData.message;
+                        }
+                    } catch (e) {
+                        // ignore parsing issues and use default message
+                    }
+
+                    document.getElementById("errorMessage").textContent = message;
+                    document.getElementById("errorMessage").style.display = "block";
+                    document.getElementById("successMessage").style.display = "none";
+                    alert(message);
                 }
             })
-            .catch(error => {
-                document.getElementById("errorMessage").style.display = "block";
-                document.getElementById("successMessage").style.display = "none";
-            });
+            .catch(() => {
+                    const message = "Unable to submit registration. Please try again.";
+                    document.getElementById("errorMessage").textContent = message;
+                    document.getElementById("errorMessage").style.display = "block";
+                    document.getElementById("successMessage").style.display = "none";
+                    alert(message);
+                });
     }
 </script>
 
