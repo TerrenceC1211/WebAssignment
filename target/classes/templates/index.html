@@ -41,6 +41,9 @@
           <p class="mt-3" sec:authorize="hasRole('LECTURER')">
               <a th:href="@{/lecturer/dashboard}" class="btn btn-secondary">Go to Lecturer Dashboard</a>
           </p>
+          <p class="mt-3" sec:authorize="hasRole('STUDENT')">
+              <a th:href="@{/student/dashboard}" class="btn btn-secondary">Go to Student Dashboard</a>
+          </p>
     </div>
 </div>
 </div>

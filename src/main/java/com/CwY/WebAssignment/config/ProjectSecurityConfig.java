@@ -24,6 +24,7 @@ public class ProjectSecurityConfig {
                     .securityMatcher("/**")
                     .authorizeHttpRequests(authorize -> authorize
                             .requestMatchers("/lecturer/**").hasRole("LECTURER")
+                            .requestMatchers("/student/**").hasRole("STUDENT")
                             .requestMatchers(
                                     "/", "/index", "/about", "/course", "/instructor", "/instructor-details",
                                     "/blog", "/blog-single", "/contact", "/login", "/api/users/register",
@@ -35,9 +36,18 @@ public class ProjectSecurityConfig {
                     .userDetailsService(userService)
                     .formLogin(form -> form
                             .loginPage("/login")
-                    .defaultSuccessUrl("/", true)
-                    .failureUrl("/login?error=true")
-                    .permitAll())
+                            .successHandler((request, response, authentication) -> {
+                                boolean isLecturer = authentication.getAuthorities().stream()
+                                        .anyMatch(authority -> authority.getAuthority().equals("ROLE_LECTURER"));
+
+                                if (isLecturer) {
+                                    response.sendRedirect("/lecturer/dashboard");
+                                } else {
+                                    response.sendRedirect("/student/dashboard");
+                                }
+                            })
+                            .failureUrl("/login?error=true")
+                            .permitAll())
                 .logout(logout -> logout
                     .logoutSuccessUrl("/login?logout=true")
                     .permitAll());
