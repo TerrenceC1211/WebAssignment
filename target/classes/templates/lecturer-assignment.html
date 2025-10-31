@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Manage Assignments</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="fragment :: header"></div>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-5">
+            <div class="col-md-8 text-center">
+                <h2>Assignment Management</h2>
+                <p class="mb-0">Create and review assignments for your students.</p>
+            </div>
+        </div>
+
+        <div class="row justify-content-center mb-4">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Create New Assignment</h3>
+
+                        <div class="alert alert-success" role="alert" th:if="${successMessage}" th:text="${successMessage}"></div>
+
+                        <form th:action="@{/lecturer/assignments}" th:object="${assignment}" method="post">
+                            <div class="form-group">
+                                <label for="title">Title</label>
+                                <input id="title" type="text" class="form-control" th:field="*{title}" placeholder="Assignment title">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('title')}" th:errors="*{title}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="description">Description</label>
+                                <textarea id="description" class="form-control" rows="4" th:field="*{description}" placeholder="Describe the assignment requirements"></textarea>
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('description')}" th:errors="*{description}"></div>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="dueDate">Due Date</label>
+                                <input id="dueDate" type="date" class="form-control" th:field="*{dueDate}">
+                                <div class="invalid-feedback d-block" th:if="${#fields.hasErrors('dueDate')}" th:errors="*{dueDate}"></div>
+                            </div>
+
+                            <div class="text-right">
+                                <button type="submit" class="btn btn-primary">Save Assignment</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row justify-content-center">
+            <div class="col-lg-10">
+                <div class="card">
+                    <div class="card-body">
+                        <h3 class="card-title">Your Assignments</h3>
+                        <p class="text-muted" th:if="${assignments.empty}">You haven't created any assignments yet.</p>
+                        <div class="table-responsive" th:if="${!assignments.empty}">
+                            <table class="table table-striped">
+                                <thead>
+                                <tr>
+                                    <th>Title</th>
+                                    <th>Due Date</th>
+                                    <th>Description</th>
+                                    <th>Created By</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:each="assignment : ${assignments}">
+                                    <td th:text="${assignment.title}"></td>
+                                    <td th:text="${#temporals.format(assignment.dueDate, 'MMM d, yyyy')}"></td>
+                                    <td th:text="${assignment.description}"></td>
+                                    <td th:text="${assignment.createdBy.userName}"></td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="fragment :: footer"></div>
+</body>
+</html>
