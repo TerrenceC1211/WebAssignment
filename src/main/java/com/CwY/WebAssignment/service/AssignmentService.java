@@ -1,5 +1,6 @@
 package com.CwY.WebAssignment.service;
 
+import com.CwY.WebAssignment.dto.AssignmentUpdateForm;
 import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.AssignmentRepository;
@@ -21,5 +22,17 @@ public class AssignmentService {
 
     public List<Assignment> getAssignmentsForLecturer(User lecturer) {
         return assignmentRepository.findByCreatedByOrderByDueDateAsc(lecturer);
+    }
+
+
+    public Assignment updateAssignment(Long assignmentId, User lecturer, AssignmentUpdateForm form) {
+        Assignment assignment = assignmentRepository.findByIdAndCreatedBy(assignmentId, lecturer)
+                .orElseThrow(() -> new IllegalArgumentException("Assignment not found or access denied."));
+
+        assignment.setTitle(form.getTitle());
+        assignment.setDescription(form.getDescription());
+        assignment.setDueDate(form.getDueDate());
+
+        return assignmentRepository.save(assignment);
     }
 }

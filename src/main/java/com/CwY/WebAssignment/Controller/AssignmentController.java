@@ -1,5 +1,6 @@
 package com.CwY.WebAssignment.Controller;
 
+import com.CwY.WebAssignment.dto.AssignmentUpdateForm;
 import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.service.AssignmentService;
@@ -11,13 +12,16 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+
 
 @Controller
 @RequestMapping("/lecturer/assignments")
@@ -40,6 +44,14 @@ public class AssignmentController {
         return "lecturer-assignment";
     }
 
+    @GetMapping("/manage")
+    public String manageAssignments(Model model, Principal principal) {
+        User lecturer = getCurrentUser(principal);
+        model.addAttribute("assignments", assignmentService.getAssignmentsForLecturer(lecturer));
+        return "lecturer-manage-assignments";
+    }
+
+
     @PostMapping
     public String createAssignment(@Valid @ModelAttribute("assignment") Assignment assignment,
                                    BindingResult bindingResult,
@@ -56,6 +68,36 @@ public class AssignmentController {
         assignmentService.createAssignment(assignment, lecturer);
         redirectAttributes.addFlashAttribute("successMessage", "Assignment created successfully.");
         return "redirect:/lecturer/assignments";
+    }
+
+    @PostMapping("/{assignmentId}/update")
+    public String updateAssignment(@PathVariable Long assignmentId,
+                                   @Valid @ModelAttribute AssignmentUpdateForm assignmentForm,
+                                   BindingResult bindingResult,
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
+        if (bindingResult.hasErrors()) {
+            redirectAttributes.addFlashAttribute("errorMessage", "Please correct the highlighted errors and try again.");
+            return "redirect:/lecturer/assignments/manage";
+        }
+
+        if (!StringUtils.hasText(assignmentForm.getTitle())
+                || !StringUtils.hasText(assignmentForm.getDescription())
+                || assignmentForm.getDueDate() == null) {
+            redirectAttributes.addFlashAttribute("errorMessage", "All fields are required to update an assignment.");
+            return "redirect:/lecturer/assignments/manage";
+        }
+
+        User lecturer = getCurrentUser(principal);
+
+        try {
+            assignmentService.updateAssignment(assignmentId, lecturer, assignmentForm);
+            redirectAttributes.addFlashAttribute("successMessage", "Assignment updated successfully.");
+        } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "redirect:/lecturer/assignments/manage";
     }
 
     private User getCurrentUser(Principal principal) {
