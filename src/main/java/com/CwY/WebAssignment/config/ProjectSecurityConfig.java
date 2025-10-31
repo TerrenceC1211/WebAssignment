@@ -3,13 +3,14 @@ package com.CwY.WebAssignment.config;
 import com.CwY.WebAssignment.service.UserService;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@EnableMethodSecurity
 public class ProjectSecurityConfig {
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -22,6 +23,7 @@ public class ProjectSecurityConfig {
             http
                     .securityMatcher("/**")
                     .authorizeHttpRequests(authorize -> authorize
+                            .requestMatchers("/lecturer/**").hasRole("LECTURER")
                             .requestMatchers(
                                     "/", "/index", "/about", "/course", "/instructor", "/instructor-details",
                                     "/blog", "/blog-single", "/contact", "/login", "/api/users/register",

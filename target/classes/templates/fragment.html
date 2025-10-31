@@ -24,6 +24,10 @@
                     <li class="nav-item"><a th:href="@{/instructor}" class="nav-link">Instructor</a></li>
                     <li class="nav-item"><a th:href="@{/blog}" class="nav-link">Blog</a></li>
                     <li class="nav-item"><a th:href="@{/contact}" class="nav-link">Contact</a></li>
+                    <!-- Step 6: Show the lecturer dashboard link only to the LECTURER role -->
+                    <li class="nav-item" sec:authorize="hasRole('LECTURER')">
+                        <a th:href="@{/lecturer/dashboard}" class="nav-link">Lecturer Dashboard</a>
+                    </li>
                     <li class="nav-item" sec:authorize="!isAuthenticated()">
                         <a th:href="@{/login}" class="nav-link">Login</a>
                     </li>
