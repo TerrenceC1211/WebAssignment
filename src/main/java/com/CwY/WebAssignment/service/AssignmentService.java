@@ -5,6 +5,7 @@ import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.AssignmentRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -22,6 +23,10 @@ public class AssignmentService {
 
     public List<Assignment> getAssignmentsForLecturer(User lecturer) {
         return assignmentRepository.findByCreatedByOrderByDueDateAsc(lecturer);
+    }
+
+    public List<Assignment> getAllAssignmentsOrdered() {
+        return assignmentRepository.findAll(Sort.by(Sort.Direction.ASC, "dueDate"));
     }
 
 
