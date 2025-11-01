@@ -10,7 +10,7 @@
 <!--header-->
 
 <section class="ftco-section">
-    <div class="container">
+    <div class="container dashboard-container">
         <div class="row justify-content-center mb-5">
             <div class="col-md-8 text-center">
                 <h2>Student Dashboard</h2>
@@ -19,7 +19,7 @@
         </div>
 
         <div class="row">
-            <div class="col-md-10 mx-auto">
+            <div class="col-12">
                 <div class="card">
                     <div class="card-body">
                         <h3 class="card-title">Assignments</h3>
@@ -32,14 +32,15 @@
                         </div>
 
                         <div th:if="${!#lists.isEmpty(assignments)}">
-                            <table class="table table-hover">
+                            <table class="table table-hover table-dashboard">
                                 <thead>
                                 <tr>
                                     <th>Assignment</th>
                                     <th>Description</th>
                                     <th>Due Date</th>
                                     <th>Status</th>
-                                    <th>Submit</th>
+                                    <th class="grade-feedback-column">Grade &amp; Feedback</th>
+                                    <th class="submission-column">Submit</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -52,7 +53,26 @@
                                         <span th:if="${submissions[assignment.id] == null and assignment.dueDate.isBefore(T(java.time.LocalDate).now())}" class="badge badge-danger">Overdue</span>
                                         <span th:if="${submissions[assignment.id] == null and !assignment.dueDate.isBefore(T(java.time.LocalDate).now())}" class="badge badge-warning">Not Submitted</span>
                                     </td>
-                                    <td>
+                                    <td class="grade-feedback">
+                                        <div th:if="${submissions[assignment.id] != null}">
+                                            <div th:if="${submissions[assignment.id].grade != null}" class="grade-value">
+                                                <span class="grade-number" th:text="${T(java.lang.String).format('%.2f', submissions[assignment.id].grade)}"></span>
+                                                <span class="grade-percent">%</span>
+                                            </div>
+                                            <div th:if="${submissions[assignment.id].grade == null}" class="grade-pending text-muted">Pending</div>
+                                            <div class="graded-on text-muted small" th:if="${submissions[assignment.id].gradedAt != null}">
+                                                <span>Graded </span>
+                                                <span th:text="${#temporals.format(submissions[assignment.id].gradedAt, 'MMM d, yyyy')}"></span>
+                                            </div>
+                                            <div class="feedback mt-2" th:if="${submissions[assignment.id].feedback != null}">
+                                                <strong>Feedback:</strong>
+                                                <span th:text="${submissions[assignment.id].feedback}"></span>
+                                            </div>
+                                            <div class="text-muted small mt-2" th:if="${submissions[assignment.id].grade == null}">Awaiting grading.</div>
+                                        </div>
+                                        <div th:if="${submissions[assignment.id] == null}" class="text-muted">—</div>
+                                    </td>
+                                    <td class="submission-column">
                                         <div th:if="${submissions[assignment.id] != null}" class="small text-muted">
                                             <div>
                                                 <span>Submitted on </span>
@@ -61,24 +81,6 @@
                                             <div th:if="${submissions[assignment.id].fileName != null}">
                                                 <span>File: </span>
                                                 <span th:text="${submissions[assignment.id].fileName}"></span>
-                                            </div>
-                                            <div class="mt-2" th:if="${submissions[assignment.id].gradedAt != null and submissions[assignment.id].grade != null}">
-                                                <div>
-                                                    <strong>Grade:</strong>
-                                                    <span th:text="${T(java.lang.String).format('%.2f', submissions[assignment.id].grade)}"></span>
-                                                    <span>%</span>
-                                                </div>
-                                                <div th:if="${submissions[assignment.id].feedback != null}">
-                                                    <strong>Feedback:</strong>
-                                                    <span th:text="${submissions[assignment.id].feedback}"></span>
-                                                </div>
-                                                <div class="text-muted">
-                                                    <small>Graded on </small>
-                                                    <small th:text="${#temporals.format(submissions[assignment.id].gradedAt, 'MMM d, yyyy HH:mm')}"></small>
-                                                </div>
-                                            </div>
-                                            <div class="mt-2 text-muted" th:if="${submissions[assignment.id].gradedAt == null or submissions[assignment.id].grade == null}">
-                                                Awaiting grading.
                                             </div>
                                             <div class="text-danger mt-2">Resubmission is not allowed.</div>
                                         </div>
@@ -89,7 +91,7 @@
                                                   enctype="multipart/form-data" class="submission-form"
                                                   th:attr="data-assignment-title=${assignment.title}">
                                                 <div class="form-group">
-                                                    <textarea class="form-control mb-2" name="content" rows="2" placeholder="Enter submission notes"></textarea>
+                                                    <textarea class="form-control mb-2" name="content" rows="5" placeholder="Enter submission notes"></textarea>
                                                 </div>
                                                 <div class="form-group">
                                                     <input class="form-control-file mb-2" type="file" name="file">

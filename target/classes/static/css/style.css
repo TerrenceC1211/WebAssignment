@@ -10105,3 +10105,80 @@ textarea.form-control {
   100% {
     stroke-dasharray: 89, 200;
     stroke-dashoffset: -136px; } }
+
+.dashboard-container {
+    width: 100%;
+}
+
+@media (min-width: 1200px) {
+    .dashboard-container {
+        max-width: 1320px;
+    }
+}
+
+.table-dashboard {
+    font-size: 1.05rem;
+    width: 100%;
+}
+
+.table-dashboard thead th {
+    padding: 1.25rem 1.5rem;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #dee2e6;
+}
+
+.table-dashboard tbody td {
+    padding: 1.25rem 1.5rem;
+    vertical-align: middle;
+}
+
+.table-dashboard .grade-feedback-column,
+.table-dashboard .submission-column {
+    white-space: normal;
+}
+
+.table-dashboard .grade-feedback-column {
+    min-width: 220px;
+}
+
+.table-dashboard .submission-column {
+    min-width: 260px;
+}
+
+.table-dashboard td.grade-feedback {
+    min-width: 180px;
+    vertical-align: top;
+}
+
+.table-dashboard td.submission-column {
+    min-width: 320px;
+}
+
+.table-dashboard .grade-value {
+    display: flex;
+    align-items: baseline;
+    gap: 0.25rem;
+    font-weight: 600;
+}
+
+.table-dashboard .grade-number {
+    font-size: 1.25rem;
+}
+
+.table-dashboard .grade-percent {
+    font-size: 0.95rem;
+}
+
+.table-dashboard .feedback {
+    font-size: 0.95rem;
+    line-height: 1.4;
+}
+
+.table-dashboard .grade-pending {
+    font-weight: 600;
+}
+
+.table-dashboard .badge {
+    font-size: 0.95rem;
+    padding: 0.5rem 0.75rem;
+}
