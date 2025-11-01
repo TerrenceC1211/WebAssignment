@@ -31,12 +31,24 @@ public class SubmissionService {
             throw new IllegalStateException("The assignment due date has passed.");
         }
 
-        Submission submission = submissionRepository.findByAssignmentAndStudent(assignment, student)
-                .orElseGet(Submission::new);
+        submissionRepository.findByAssignmentAndStudent(assignment, student)
+                .ifPresent(existing -> {
+                    throw new IllegalStateException("You have already submitted this assignment.");
+                });
+
+        String normalizedContent = content != null ? content.trim() : null;
+        boolean hasTextContent = normalizedContent != null && !normalizedContent.isEmpty();
+        boolean hasFileContent = file != null && !file.isEmpty();
+
+        if (!hasTextContent && !hasFileContent) {
+            throw new IllegalArgumentException("Please provide text or attach a file before submitting.");
+        }
+
+        Submission submission = new Submission();
         submission.setAssignment(assignment);
         submission.setStudent(student);
 
-        if (file != null && !file.isEmpty()) {
+        if (hasFileContent) {
             if(file.getSize() > MAX_FILE_SIZE_BYTES) {
                 throw new IllegalArgumentException("File size exceeds the allowed limit of 5 MB.");
             }
@@ -51,7 +63,7 @@ public class SubmissionService {
             submission.setFileData(null);
             }
 
-        submission.setContent(content);
+        submission.setContent(hasTextContent ? normalizedContent : null);
         submission.setSubmittedAt(LocalDateTime.now());
 
         return submissionRepository.save(submission);

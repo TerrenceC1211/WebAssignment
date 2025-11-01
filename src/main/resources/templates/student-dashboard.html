@@ -102,6 +102,16 @@
         submissionForms.forEach(function (form) {
             form.addEventListener('submit', function (event) {
                 const assignmentTitle = form.getAttribute('data-assignment-title') || 'this assignment';
+                const textArea = form.querySelector('textarea[name="content"]');
+                const fileInput = form.querySelector('input[type="file"][name="file"]');
+                const hasText = textArea && textArea.value.trim().length > 0;
+                const hasFile = fileInput && fileInput.files && fileInput.files.length > 0 && fileInput.files[0].size > 0;
+
+                if (!hasText && !hasFile) {
+                    event.preventDefault();
+                    alert('Please enter some text or attach a file before submitting.');
+                    return;
+                }
                 const firstConfirmation = confirm('Are you sure you want to submit "' + assignmentTitle + '"?');
                 if (!firstConfirmation) {
                     event.preventDefault();
