@@ -25,6 +25,13 @@ public class AssignmentService {
         return assignmentRepository.findByCreatedByOrderByDueDateAsc(lecturer);
     }
 
+    public Assignment getAssignmentForLecturer(Long assignmentId, User lecturer) {
+        return assignmentRepository.findByIdAndCreatedBy(assignmentId, lecturer)
+                .orElseThrow(() -> new IllegalArgumentException("Assignment not found or access denied."));
+    }
+
+
+
     public List<Assignment> getAllAssignmentsOrdered() {
         return assignmentRepository.findAll(Sort.by(Sort.Direction.ASC, "dueDate"));
     }

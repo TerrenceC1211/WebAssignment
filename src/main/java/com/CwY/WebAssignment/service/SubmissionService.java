@@ -77,6 +77,40 @@ public class SubmissionService {
         }
         return submissionsByAssignment;
     }
+
+
+    public List<Submission> getSubmissionsForAssignment(Long assignmentId, User lecturer) {
+        Assignment assignment = assignmentRepository.findByIdAndCreatedBy(assignmentId, lecturer)
+                .orElseThrow(() -> new IllegalArgumentException("Assignment not found or access denied."));
+
+        return submissionRepository.findByAssignmentOrderBySubmittedAtAsc(assignment);
+    }
+
+    public Submission gradeSubmission(Long submissionId, User lecturer, Double grade, String feedback) {
+        if (grade == null) {
+            throw new IllegalArgumentException("Grade is required.");
+        }
+
+        if (grade < 0 || grade > 100) {
+            throw new IllegalArgumentException("Grade must be between 0 and 100.");
+        }
+
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new IllegalArgumentException("Submission not found."));
+
+        Assignment assignment = submission.getAssignment();
+        if (!assignment.getCreatedBy().getUserId().equals(lecturer.getUserId())) {
+            throw new IllegalArgumentException("You do not have permission to grade this submission.");
+        }
+
+        submission.setGrade(grade);
+
+        String normalizedFeedback = feedback != null ? feedback.trim() : null;
+        submission.setFeedback((normalizedFeedback != null && !normalizedFeedback.isEmpty()) ? normalizedFeedback : null);
+        submission.setGradedAt(LocalDateTime.now());
+
+        return submissionRepository.save(submission);
+    }
 }
 
 

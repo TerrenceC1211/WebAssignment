@@ -62,6 +62,24 @@
                                                 <span>File: </span>
                                                 <span th:text="${submissions[assignment.id].fileName}"></span>
                                             </div>
+                                            <div class="mt-2" th:if="${submissions[assignment.id].gradedAt != null and submissions[assignment.id].grade != null}">
+                                                <div>
+                                                    <strong>Grade:</strong>
+                                                    <span th:text="${T(java.lang.String).format('%.2f', submissions[assignment.id].grade)}"></span>
+                                                    <span>%</span>
+                                                </div>
+                                                <div th:if="${submissions[assignment.id].feedback != null}">
+                                                    <strong>Feedback:</strong>
+                                                    <span th:text="${submissions[assignment.id].feedback}"></span>
+                                                </div>
+                                                <div class="text-muted">
+                                                    <small>Graded on </small>
+                                                    <small th:text="${#temporals.format(submissions[assignment.id].gradedAt, 'MMM d, yyyy HH:mm')}"></small>
+                                                </div>
+                                            </div>
+                                            <div class="mt-2 text-muted" th:if="${submissions[assignment.id].gradedAt == null or submissions[assignment.id].grade == null}">
+                                                Awaiting grading.
+                                            </div>
                                             <div class="text-danger mt-2">Resubmission is not allowed.</div>
                                         </div>
                                         <div th:if="${submissions[assignment.id] == null}">

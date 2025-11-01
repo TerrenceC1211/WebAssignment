@@ -32,4 +32,11 @@ public class Submission {
     private byte[] fileData;
 
     private LocalDateTime submittedAt;
+
+    private Double grade;
+
+    @Column(length = 2000)
+    private String feedback;
+
+    private LocalDateTime gradedAt;
 }
