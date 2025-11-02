@@ -12,4 +12,7 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     Optional<Submission> findByAssignmentAndStudent(Assignment assignment, User student);
     List<Submission> findByStudent(User student);
     List<Submission> findByAssignmentOrderBySubmittedAtAsc(Assignment assignment);
+    long countByAssignmentAndGradeIsNull(Assignment assignment);
+    long countByAssignment(Assignment assignment);
+
 }

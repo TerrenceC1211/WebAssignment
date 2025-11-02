@@ -17,7 +17,7 @@
                     Due <span th:text="${#temporals.format(assignment.dueDate, 'MMM d, yyyy')}"></span>
                 </p>
             </div>
-            <a th:href="@{/lecturer/assignments/manage}" class="btn btn-outline-secondary">&larr; Back</a>
+            <a th:href="@{/lecturer/dashboard}" class="btn btn-outline-secondary">&larr; Back</a>
         </div>
 
         <div th:if="${successMessage}" class="alert alert-success" th:text="${successMessage}"></div>

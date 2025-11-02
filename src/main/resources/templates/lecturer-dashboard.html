@@ -40,34 +40,40 @@
                     <div class="card mb-4">
                         <div class="card-body">
                             <h3 class="card-title">Grading Queue</h3>
-                            <p class="card-text">Assignments waiting for review.</p>
-                            <table class="table table-striped">
-                                <thead>
-                                <tr>
-                                    <th>Course</th>
-                                    <th>Assignment</th>
-                                    <th>Submissions Pending</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr>
-                                    <td>Web Development 101</td>
-                                    <td>Responsive Design Project</td>
-                                    <td>5</td>
-                                </tr>
-                                <tr>
-                                    <td>Advanced Java</td>
-                                    <td>Spring Boot Lab</td>
-                                    <td>2</td>
-                                </tr>
-                                <tr>
-                                    <td>Database Systems</td>
-                                    <td>ER Diagram Assignment</td>
-                                    <td>8</td>
-                                </tr>
-                                </tbody>
-                            </table>
-                            <a class="btn btn-secondary" href="#">View Full Queue</a>
+                            <p class="card-text">Stay on top of upcoming deadlines and submissions that still need grading.</p>
+                            <div class="table-responsive">
+                                <table class="table table-striped mb-0">
+                                    <thead>
+                                    <tr>
+                                        <th>Course - Assignment</th>
+                                        <th>Submissions</th>
+                                        <th>Grading Pending</th>
+                                        <th class="text-right">View Queue</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <tr th:if="${#lists.isEmpty(gradingQueueItems)}">
+                                        <td colspan="4" class="text-center text-muted">No assignments are awaiting grading right now.</td>
+                                    </tr>
+                                    <tr th:each="item : ${gradingQueueItems}">
+                                        <td th:text="${item.assignmentTitle}">Course - Assignment</td>
+                                        <td>
+                                            <span th:text="${item.totalSubmissions}">0</span>
+                                            <span class="text-muted" th:if="${item.totalSubmissions == 0}">(None yet)</span>
+                                        </td>                                        <td>
+                                            <span th:text="${item.pendingCount}">0</span>
+                                            <span class="text-muted" th:if="${item.pendingCount == 0}">(All graded)</span>
+                                        </td>
+                                        <td class="text-right">
+                                            <a class="btn btn-secondary btn-sm"
+                                               th:href="@{'/lecturer/assignments/' + ${item.assignmentId} + '/submissions'}">
+                                                View Queue
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </div>
                     </div>
                 </div>

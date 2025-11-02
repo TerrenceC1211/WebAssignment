@@ -86,6 +86,15 @@ public class SubmissionService {
         return submissionRepository.findByAssignmentOrderBySubmittedAtAsc(assignment);
     }
 
+    public long countPendingSubmissionsForAssignment(Assignment assignment) {
+        return submissionRepository.countByAssignmentAndGradeIsNull(assignment);
+    }
+
+    public long countSubmissionsForAssignment(Assignment assignment) {
+        return submissionRepository.countByAssignment(assignment);
+    }
+
+
     public Submission gradeSubmission(Long submissionId, User lecturer, Double grade, String feedback) {
         if (grade == null) {
             throw new IllegalArgumentException("Grade is required.");
