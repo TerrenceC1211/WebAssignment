@@ -7,6 +7,11 @@ import com.CwY.WebAssignment.service.AssignmentService;
 import com.CwY.WebAssignment.service.SubmissionService;
 import com.CwY.WebAssignment.service.UserService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -65,6 +70,28 @@ public class GradingController {
         return "redirect:/lecturer/assignments/" + assignmentId + "/submissions";
     }
 
+    @GetMapping("/lecturer/submissions/{submissionId}/file")
+    public ResponseEntity<Resource> downloadSubmissionFile(@PathVariable Long submissionId,
+                                                           Principal principal) {
+        User lecturer = getCurrentUser(principal);
+        Submission submission = submissionService.getSubmissionForLecturer(submissionId, lecturer);
+
+        byte[] fileData = submission.getFileData();
+        if (fileData == null || fileData.length == 0) {
+            return ResponseEntity.notFound().build();
+        }
+
+        String fileName = submission.getFileName() != null ? submission.getFileName() : "submission-file";
+
+        Resource resource = new ByteArrayResource(fileData);
+
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + fileName + "\"")
+                .contentLength(fileData.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+    
     private User getCurrentUser(Principal principal) {
         return userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalStateException("Username not found"));

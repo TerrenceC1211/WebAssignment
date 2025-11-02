@@ -120,6 +120,19 @@ public class SubmissionService {
 
         return submissionRepository.save(submission);
     }
+
+
+    public Submission getSubmissionForLecturer(Long submissionId, User lecturer) {
+        Submission submission = submissionRepository.findById(submissionId)
+                .orElseThrow(() -> new IllegalArgumentException("Submission not found."));
+
+        Assignment assignment = submission.getAssignment();
+        if (!assignment.getCreatedBy().getUserId().equals(lecturer.getUserId())) {
+            throw new IllegalArgumentException("You do not have permission to access this submission.");
+        }
+
+        return submission;
+    }
 }
 
 

@@ -52,7 +52,11 @@
                                 <div th:if="${submission.content != null}" th:text="${submission.content}"></div>
                                 <div th:if="${submission.fileName != null}">
                                     <strong>File:</strong>
-                                    <span th:text="${submission.fileName}"></span>
+                                    <a th:href="@{'/lecturer/submissions/' + ${submission.id} + '/file'}"
+                                       th:text="${submission.fileName}"></a>
+                                </div>
+                                <div th:if="${submission.fileName == null}" class="text-muted small">
+                                    No file uploaded.
                                 </div>
                             </td>
                             <td>
