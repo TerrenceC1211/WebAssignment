@@ -3620,7 +3620,7 @@ input[type="button"].btn-block {
   -webkit-box-pack: justify;
   -ms-flex-pack: justify;
   justify-content: space-between;
-  padding: 0.5rem 1rem; }
+  padding: 0rem 1rem; }
   .navbar .container,
   .navbar .container-fluid, .navbar .container-sm, .navbar .container-md, .navbar .container-lg, .navbar .container-xl {
     display: -webkit-box;
@@ -8377,7 +8377,7 @@ h1, h2, h3, h4, h5,
   color: #4986fc !important; }
 
 .ftco-navbar-light {
-  background: transparent !important;
+  background: rgba(0, 0, 0, 0.85) !important;
   position: absolute;
   top: -8px;
   left: 0;
