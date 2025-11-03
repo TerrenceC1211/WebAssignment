@@ -5,6 +5,7 @@ import com.CwY.WebAssignment.model.Submission;
 import com.CwY.WebAssignment.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+
 import java.util.List;
 import java.util.Optional;
 
@@ -14,5 +15,6 @@ public interface SubmissionRepository extends JpaRepository<Submission, Long> {
     List<Submission> findByAssignmentOrderBySubmittedAtAsc(Assignment assignment);
     long countByAssignmentAndGradeIsNull(Assignment assignment);
     long countByAssignment(Assignment assignment);
+    void deleteByAssignment(Assignment assignment);
 
 }

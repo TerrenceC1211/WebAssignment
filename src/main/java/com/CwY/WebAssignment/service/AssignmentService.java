@@ -6,13 +6,16 @@ import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.AssignmentRepository;
 import com.CwY.WebAssignment.repository.SubmissionRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+
 
 import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
@@ -60,9 +63,8 @@ public class AssignmentService {
 
         long submissionCount = submissionRepository.countByAssignment(assignment);
         if (submissionCount > 0) {
-            throw new IllegalStateException(String.format(
-                    "Cannot delete this assignment because %d submission(s) have already been received.",
-                    submissionCount));
+            log.warn("Deleting assignment {} will also remove {} submission(s).", assignmentId, submissionCount);
+            submissionRepository.deleteByAssignment(assignment);
         }
 
         assignmentRepository.delete(assignment);
