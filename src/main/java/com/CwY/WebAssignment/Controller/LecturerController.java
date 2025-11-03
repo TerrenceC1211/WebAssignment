@@ -2,6 +2,7 @@ package com.CwY.WebAssignment.Controller;
 
 import com.CwY.WebAssignment.dto.GradingQueueItem;
 import com.CwY.WebAssignment.model.Assignment;
+
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.service.AssignmentService;
 import com.CwY.WebAssignment.service.SubmissionService;
@@ -24,19 +25,32 @@ public class LecturerController {
     private final AssignmentService assignmentService;
     private final SubmissionService submissionService;
     private final UserService userService;
+    private static final int DASHBOARD_QUEUE_PREVIEW_LIMIT = 5;
+
 
     @GetMapping("/lecturer/dashboard")
     @PreAuthorize("hasRole('LECTURER')")
     public String showLecturerDashboard(Model model, Principal principal) {
         User lecturer = getCurrentUser(principal);
 
-        List<GradingQueueItem> gradingQueueItems = assignmentService.getAssignmentsForLecturer(lecturer)
-                .stream()
-                .map(assignment -> buildQueueItem(assignment))
+        List<GradingQueueItem> fullQueue = buildQueueItems(lecturer);
+        List<GradingQueueItem> previewQueue = fullQueue.stream()
+                .limit(DASHBOARD_QUEUE_PREVIEW_LIMIT)
                 .collect(Collectors.toList());
 
-        model.addAttribute("gradingQueueItems", gradingQueueItems);
+        model.addAttribute("gradingQueueItems", previewQueue);
+        model.addAttribute("hasMoreGradingQueueItems", fullQueue.size() > DASHBOARD_QUEUE_PREVIEW_LIMIT);
+        model.addAttribute("gradingQueuePreviewLimit", DASHBOARD_QUEUE_PREVIEW_LIMIT);
         return "lecturer-dashboard";
+    }
+
+    @GetMapping("/lecturer/grading-queue")
+    @PreAuthorize("hasRole('LECTURER')")
+    public String showFullGradingQueue(Model model, Principal principal) {
+        User lecturer = getCurrentUser(principal);
+
+        model.addAttribute("gradingQueueItems", buildQueueItems(lecturer));
+        return "lecturer-grading-queue";
     }
 
     private GradingQueueItem buildQueueItem(Assignment assignment) {
@@ -48,6 +62,13 @@ public class LecturerController {
                 totalSubmissions,
                 pendingCount
         );
+    }
+
+    private List<GradingQueueItem> buildQueueItems(User lecturer) {
+        return assignmentService.getAssignmentsForLecturer(lecturer)
+                .stream()
+                .map(this::buildQueueItem)
+                .collect(Collectors.toList());
     }
 
     private User getCurrentUser(Principal principal) {

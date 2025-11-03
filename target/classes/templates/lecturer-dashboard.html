@@ -41,6 +41,9 @@
                         <div class="card-body">
                             <h3 class="card-title">Grading Queue</h3>
                             <p class="card-text">Stay on top of upcoming deadlines and submissions that still need grading.</p>
+                            <p class="text-muted" th:if="${hasMoreGradingQueueItems}">
+                                Showing the first <span th:text="${gradingQueuePreviewLimit}">5</span> assignments awaiting grading.
+                            </p>
                             <div class="table-responsive">
                                 <table class="table table-striped mb-0">
                                     <thead>
@@ -73,6 +76,9 @@
                                     </tr>
                                     </tbody>
                                 </table>
+                            </div>
+                            <div class="mt-3 text-right" th:if="${hasMoreGradingQueueItems}">
+                                <a class="btn btn-primary" th:href="@{/lecturer/grading-queue}">View Full Grading Queue</a>
                             </div>
                         </div>
                     </div>

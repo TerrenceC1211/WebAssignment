@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Full Grading Queue</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+<div th:replace="fragment :: header"></div>
+
+<section class="ftco-section">
+    <div class="container">
+        <div class="row justify-content-center mb-4">
+            <div class="col-md-10">
+                <h2 class="mb-3">Full Grading Queue</h2>
+                <p class="text-muted">Review every assignment that currently has submissions awaiting grading.</p>
+                <a class="btn btn-outline-secondary mb-3" th:href="@{/lecturer/dashboard}">Back to dashboard</a>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col-md-10">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped mb-0">
+                                <thead>
+                                <tr>
+                                    <th>Course - Assignment</th>
+                                    <th>Submissions</th>
+                                    <th>Grading Pending</th>
+                                    <th class="text-right">View Queue</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <tr th:if="${#lists.isEmpty(gradingQueueItems)}">
+                                    <td colspan="4" class="text-center text-muted">No assignments are awaiting grading right now.</td>
+                                </tr>
+                                <tr th:each="item : ${gradingQueueItems}">
+                                    <td th:text="${item.assignmentTitle}">Course - Assignment</td>
+                                    <td>
+                                        <span th:text="${item.totalSubmissions}">0</span>
+                                        <span class="text-muted" th:if="${item.totalSubmissions == 0}">(None yet)</span>
+                                    </td>
+                                    <td>
+                                        <span th:text="${item.pendingCount}">0</span>
+                                        <span class="text-muted" th:if="${item.pendingCount == 0}">(All graded)</span>
+                                    </td>
+                                    <td class="text-right">
+                                        <a class="btn btn-secondary btn-sm"
+                                           th:href="@{'/lecturer/assignments/' + ${item.assignmentId} + '/submissions'}">
+                                            View Queue
+                                        </a>
+                                    </td>
+                                </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div th:replace="fragment :: footer"></div>
+</body>
+</html>
