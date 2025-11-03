@@ -10132,6 +10132,17 @@ textarea.form-control {
     vertical-align: middle;
 }
 
+.assignment-row {
+    cursor: move;
+    transition: background-color 0.2s ease;
+}
+
+.assignment-row.dragging {
+    opacity: 0.6;
+    background-color: #e9f4ff;
+}
+
+
 .table-dashboard .grade-feedback-column,
 .table-dashboard .submission-column {
     white-space: normal;
