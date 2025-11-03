@@ -41,6 +41,17 @@ public class NotificationService {
         students.forEach(student -> createNotification(student, title, message, NotificationType.ASSIGNMENT_CREATED));
     }
 
+    public void notifyAssignmentRemoved(Assignment assignment) {
+        List<User> students = userRepository.findByRole(Role.STUDENT);
+        if (students.isEmpty()) {
+            return;
+        }
+        String title = "Assignment Removed";
+        String message = String.format("%s has been removed. Please update your schedule accordingly.",
+                assignment.getTitle());
+        students.forEach(student -> createNotification(student, title, message, NotificationType.REMINDER));
+    }
+
     public void notifySubmissionCreated(Submission submission) {
         User lecturer = submission.getAssignment().getCreatedBy();
         if (lecturer == null) {

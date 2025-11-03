@@ -4,6 +4,7 @@ import com.CwY.WebAssignment.dto.AssignmentUpdateForm;
 import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.service.AssignmentService;
+import com.CwY.WebAssignment.service.SubmissionService;
 import com.CwY.WebAssignment.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
+import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Controller
@@ -31,6 +35,7 @@ public class AssignmentController {
 
     private final AssignmentService assignmentService;
     private final UserService userService;
+    private final SubmissionService submissionService;
 
     @GetMapping
     public String showAssignments(Model model, Principal principal) {
@@ -47,7 +52,12 @@ public class AssignmentController {
     @GetMapping("/manage")
     public String manageAssignments(Model model, Principal principal) {
         User lecturer = getCurrentUser(principal);
-        model.addAttribute("assignments", assignmentService.getAssignmentsForLecturer(lecturer));
+        List<Assignment> assignments = assignmentService.getAssignmentsForLecturer(lecturer);
+        model.addAttribute("assignments", assignments);
+        Map<Long, Long> submissionCounts = assignments.stream()
+                .collect(Collectors.toMap(Assignment::getId,
+                        assignment -> submissionService.countSubmissionsForAssignment(assignment)));
+        model.addAttribute("submissionCounts", submissionCounts);
         return "lecturer-manage-assignments";
     }
 
@@ -94,6 +104,22 @@ public class AssignmentController {
             assignmentService.updateAssignment(assignmentId, lecturer, assignmentForm);
             redirectAttributes.addFlashAttribute("successMessage", "Assignment updated successfully.");
         } catch (IllegalArgumentException ex) {
+            redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
+        }
+
+        return "redirect:/lecturer/assignments/manage";
+    }
+
+    @PostMapping("/{assignmentId}/delete")
+    public String deleteAssignment(@PathVariable Long assignmentId,
+                                   Principal principal,
+                                   RedirectAttributes redirectAttributes) {
+        User lecturer = getCurrentUser(principal);
+
+        try {
+            assignmentService.deleteAssignment(assignmentId, lecturer);
+            redirectAttributes.addFlashAttribute("successMessage", "Assignment removed successfully.");
+        } catch (IllegalArgumentException | IllegalStateException ex) {
             redirectAttributes.addFlashAttribute("errorMessage", ex.getMessage());
         }
 

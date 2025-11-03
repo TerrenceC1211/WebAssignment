@@ -4,6 +4,7 @@ import com.CwY.WebAssignment.dto.AssignmentUpdateForm;
 import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.AssignmentRepository;
+import com.CwY.WebAssignment.repository.SubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
@@ -15,8 +16,8 @@ import java.util.List;
 public class AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
+    private final SubmissionRepository submissionRepository;
     private final NotificationService notificationService;
-
 
     public Assignment createAssignment(Assignment assignment, User createdBy) {
         assignment.setCreatedBy(createdBy);
@@ -51,5 +52,20 @@ public class AssignmentService {
         assignment.setDueDate(form.getDueDate());
 
         return assignmentRepository.save(assignment);
+    }
+
+    public void deleteAssignment(Long assignmentId, User lecturer) {
+        Assignment assignment = assignmentRepository.findByIdAndCreatedBy(assignmentId, lecturer)
+                .orElseThrow(() -> new IllegalArgumentException("Assignment not found or access denied."));
+
+        long submissionCount = submissionRepository.countByAssignment(assignment);
+        if (submissionCount > 0) {
+            throw new IllegalStateException(String.format(
+                    "Cannot delete this assignment because %d submission(s) have already been received.",
+                    submissionCount));
+        }
+
+        assignmentRepository.delete(assignment);
+        notificationService.notifyAssignmentRemoved(assignment);
     }
 }
