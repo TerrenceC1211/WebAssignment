@@ -15,11 +15,16 @@ import java.util.List;
 public class AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
+    private final NotificationService notificationService;
+
 
     public Assignment createAssignment(Assignment assignment, User createdBy) {
         assignment.setCreatedBy(createdBy);
-        return assignmentRepository.save(assignment);
+        Assignment savedAssignment = assignmentRepository.save(assignment);
+        notificationService.notifyAssignmentCreated(savedAssignment);
+        return savedAssignment;
     }
+
 
     public List<Assignment> getAssignmentsForLecturer(User lecturer) {
         return assignmentRepository.findByCreatedByOrderByDueDateAsc(lecturer);

@@ -23,6 +23,8 @@ public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final AssignmentRepository assignmentRepository;
+    private final NotificationService notificationService;
+
 
     public Submission submitAssignment(Long assignmentId, User student, String content, MultipartFile file) {
         Assignment assignment = assignmentRepository.findById(assignmentId).orElseThrow(() -> new IllegalArgumentException("Assignment Not Found"));
@@ -66,8 +68,11 @@ public class SubmissionService {
         submission.setContent(hasTextContent ? normalizedContent : null);
         submission.setSubmittedAt(LocalDateTime.now());
 
-        return submissionRepository.save(submission);
+        Submission savedSubmission = submissionRepository.save(submission);
+        notificationService.notifySubmissionCreated(savedSubmission);
+        return savedSubmission;
     }
+
 
     public Map<Long, Submission> getSubmissionsForStudent(User student) {
         List<Submission> submissions = submissionRepository.findByStudent(student);
@@ -118,7 +123,9 @@ public class SubmissionService {
         submission.setFeedback((normalizedFeedback != null && !normalizedFeedback.isEmpty()) ? normalizedFeedback : null);
         submission.setGradedAt(LocalDateTime.now());
 
-        return submissionRepository.save(submission);
+        Submission gradedSubmission = submissionRepository.save(submission);
+        notificationService.notifySubmissionGraded(gradedSubmission);
+        return gradedSubmission;
     }
 
 

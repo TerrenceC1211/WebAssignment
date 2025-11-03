@@ -91,7 +91,7 @@ public class GradingController {
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
     }
-    
+
     private User getCurrentUser(Principal principal) {
         return userService.findByUsername(principal.getName())
                 .orElseThrow(() -> new IllegalStateException("Username not found"));
