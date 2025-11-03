@@ -9,6 +9,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 
 
 import java.util.List;
@@ -57,6 +59,7 @@ public class AssignmentService {
         return assignmentRepository.save(assignment);
     }
 
+    @Transactional
     public void deleteAssignment(Long assignmentId, User lecturer) {
         Assignment assignment = assignmentRepository.findByIdAndCreatedBy(assignmentId, lecturer)
                 .orElseThrow(() -> new IllegalArgumentException("Assignment not found or access denied."));

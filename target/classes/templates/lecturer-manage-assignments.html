@@ -56,14 +56,13 @@
                                       method="post" class="d-inline">
                                     <button type="submit" class="btn btn-primary btn-sm">Update</button>
                                 </form>
-                                <form th:if="${submissionCount == 0}"
-                                      th:action="@{'/lecturer/assignments/' + ${assignment.id} + '/delete'}"
+                                <form th:action="@{'/lecturer/assignments/' + ${assignment.id} + '/delete'}"
                                       method="post" class="d-inline ms-2"
-                                      onsubmit="return confirm('Are you sure you want to delete this assignment?');">
+                                      onsubmit="return confirm('Deleting this assignment will also remove all related submissions. Continue?');">
                                     <button type="submit" class="btn btn-outline-danger btn-sm">Delete</button>
                                 </form>
                                 <div th:if="${submissionCount > 0}" class="text-muted small mt-2">
-                                    Cannot delete - <span th:text="${submissionCount}"></span> submission(s) exist.
+                                    Deleting will also remove <span th:text="${submissionCount}"></span> submission(s).
                                 </div>
                             </td>
                         </tr>
