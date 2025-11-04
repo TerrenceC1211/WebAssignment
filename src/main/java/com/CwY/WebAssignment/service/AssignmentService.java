@@ -1,12 +1,16 @@
 package com.CwY.WebAssignment.service;
 
 import com.CwY.WebAssignment.dto.AssignmentUpdateForm;
+import com.CwY.WebAssignment.event.AssignmentCreatedEvent;
+import com.CwY.WebAssignment.event.AssignmentDeletedEvent;
 import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.AssignmentRepository;
 import com.CwY.WebAssignment.repository.SubmissionRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.context.ApplicationEventPublisher;
+
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -22,12 +26,12 @@ public class AssignmentService {
 
     private final AssignmentRepository assignmentRepository;
     private final SubmissionRepository submissionRepository;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
     public Assignment createAssignment(Assignment assignment, User createdBy) {
         assignment.setCreatedBy(createdBy);
         Assignment savedAssignment = assignmentRepository.save(assignment);
-        notificationService.notifyAssignmentCreated(savedAssignment);
+        eventPublisher.publishEvent(new AssignmentCreatedEvent(savedAssignment));
         return savedAssignment;
     }
 
@@ -71,6 +75,6 @@ public class AssignmentService {
         }
 
         assignmentRepository.delete(assignment);
-        notificationService.notifyAssignmentRemoved(assignment);
+        eventPublisher.publishEvent(new AssignmentDeletedEvent(assignment));
     }
 }

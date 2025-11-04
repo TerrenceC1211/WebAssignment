@@ -1,11 +1,14 @@
 package com.CwY.WebAssignment.service;
 
+import com.CwY.WebAssignment.event.SubmissionCreatedEvent;
+import com.CwY.WebAssignment.event.SubmissionGradedEvent;
 import com.CwY.WebAssignment.model.Assignment;
 import com.CwY.WebAssignment.model.Submission;
 import com.CwY.WebAssignment.model.User;
 import com.CwY.WebAssignment.repository.AssignmentRepository;
 import com.CwY.WebAssignment.repository.SubmissionRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,7 +26,7 @@ public class SubmissionService {
 
     private final SubmissionRepository submissionRepository;
     private final AssignmentRepository assignmentRepository;
-    private final NotificationService notificationService;
+    private final ApplicationEventPublisher eventPublisher;
 
 
     public Submission submitAssignment(Long assignmentId, User student, String content, MultipartFile file) {
@@ -69,7 +72,7 @@ public class SubmissionService {
         submission.setSubmittedAt(LocalDateTime.now());
 
         Submission savedSubmission = submissionRepository.save(submission);
-        notificationService.notifySubmissionCreated(savedSubmission);
+        eventPublisher.publishEvent(new SubmissionCreatedEvent(savedSubmission));
         return savedSubmission;
     }
 
@@ -124,7 +127,7 @@ public class SubmissionService {
         submission.setGradedAt(LocalDateTime.now());
 
         Submission gradedSubmission = submissionRepository.save(submission);
-        notificationService.notifySubmissionGraded(gradedSubmission);
+        eventPublisher.publishEvent(new SubmissionGradedEvent(gradedSubmission));
         return gradedSubmission;
     }
 

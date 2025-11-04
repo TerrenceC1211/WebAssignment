@@ -1,9 +1,14 @@
 package com.CwY.WebAssignment.service;
 
+import com.CwY.WebAssignment.event.AssignmentCreatedEvent;
+import com.CwY.WebAssignment.event.AssignmentDeletedEvent;
+import com.CwY.WebAssignment.event.SubmissionCreatedEvent;
+import com.CwY.WebAssignment.event.SubmissionGradedEvent;
 import com.CwY.WebAssignment.model.*;
 import com.CwY.WebAssignment.repository.NotificationRepository;
 import com.CwY.WebAssignment.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -19,7 +24,7 @@ public class NotificationService {
     private final NotificationRepository notificationRepository;
     private final UserRepository userRepository;
 
-    public Notification createNotification(User user, String title, String message, NotificationType type) {
+    private Notification createNotification(User user, String title, String message, NotificationType type) {
         Notification notification = new Notification();
         notification.setUser(user);
         notification.setTitle(title);
@@ -30,7 +35,9 @@ public class NotificationService {
         return notificationRepository.save(notification);
     }
 
-    public void notifyAssignmentCreated(Assignment assignment) {
+    @EventListener
+    public void handleAssignmentCreated(AssignmentCreatedEvent event) {
+        Assignment assignment = event.assignment();
         List<User> students = userRepository.findByRole(Role.STUDENT);
         if (students.isEmpty()) {
             return;
@@ -41,7 +48,9 @@ public class NotificationService {
         students.forEach(student -> createNotification(student, title, message, NotificationType.ASSIGNMENT_CREATED));
     }
 
-    public void notifyAssignmentRemoved(Assignment assignment) {
+    @EventListener
+    public void handleAssignmentRemoved(AssignmentDeletedEvent event) {
+        Assignment assignment = event.assignment();
         List<User> students = userRepository.findByRole(Role.STUDENT);
         if (students.isEmpty()) {
             return;
@@ -52,7 +61,9 @@ public class NotificationService {
         students.forEach(student -> createNotification(student, title, message, NotificationType.REMINDER));
     }
 
-    public void notifySubmissionCreated(Submission submission) {
+    @EventListener
+    public void handleSubmissionCreated(SubmissionCreatedEvent event) {
+        Submission submission = event.submission();
         User lecturer = submission.getAssignment().getCreatedBy();
         if (lecturer == null) {
             return;
@@ -63,7 +74,9 @@ public class NotificationService {
         createNotification(lecturer, title, message, NotificationType.ASSIGNMENT_SUBMITTED);
     }
 
-    public void notifySubmissionGraded(Submission submission) {
+    @EventListener
+    public void handleSubmissionGraded(SubmissionGradedEvent event) {
+        Submission submission = event.submission();
         User student = submission.getStudent();
         if (student == null) {
             return;
